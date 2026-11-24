@@ -125,6 +125,8 @@ HISTORICO = [
                    "testadas no simulador com toques automáticos. O simulador passou a compilar os .cpp da pasta da etapa."),
     ("24/11/2026", "Projeto publicado no GitHub (github.com/ensosampaio/visor-vida-mtg, privado). A partir daqui, o Claude faz commit e "
                    "push direto no repositório, e a pasta local é atualizada com git pull."),
+    ("24/11/2026", "Briefing para um artista fazer a arte personalizada das telas (docs/arte): medidas e limitações da tela, "
+                   "lista de peças, formato de entrega, direitos e checklist, com gabaritos em tamanho real e versão em PDF."),
 ]
 
 # ----------------------------------------------------------------------------------- montagem
@@ -282,7 +284,8 @@ rows = [["Pasta", "Conteúdo"],
         ["etapas/etapa07a11_visor/", "Visor completo: .ino, game.h/.cpp (regras), ui.h/.cpp (telas), guia que liga cada etapa (7 a 11) ao código, e prints de todas as telas."],
         ["simulador/", "CMakeLists.txt, main.cpp e arduino_shim.h (imita Serial, delay e millis no PC) e o README.md."],
         ["rascunho/LifeCounter/", "Primeiro rascunho do firmware (substituído por etapas/etapa07a11_visor)."],
-        ["docs/fonte/", "Script e imagens que geram este diário."]]
+        ["docs/fonte/", "Script e imagens que geram este diário."],
+        ["docs/arte/", "Briefing para o artista (BRIEFING_ARTE.md e Briefing_Arte.pdf) e gabaritos das telas em tamanho real."]]
 s += [Spacer(1, 3 * mm), table(rows, [48 * mm, W - 48 * mm])]
 s += [Spacer(1, 3 * mm), Table([[Image(f"{IMG}/visor_jogo.png", simw, simw * 480 / 800),
               P("Visor completo (etapas 7 a 11) no simulador: P2 levou -3 e P4 -1. "
