@@ -1,0 +1,14 @@
+# Compilação do simulador
+simulador/build/
+
+# Biblioteca LovyanGFX clonada para o simulador (é baixada com git clone, ver simulador/README.md)
+simulador/LovyanGFX/
+
+# Cópias de arquivos enviados pelo Claude na conversa
+Claude outputs/
+
+# Arquivos do sistema e de editores
+.DS_Store
+*.swp
+.vscode/
+.idea/
