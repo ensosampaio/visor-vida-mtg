@@ -43,6 +43,15 @@ cmake --build build -j
 Arduino IDE 2 + pacote **esp32** (Espressif) + biblioteca **LovyanGFX**. Em *Ferramentas*:
 Placa **ESP32S3 Dev Module**, Flash Size **16MB**, PSRAM **OPI PSRAM**. Detalhes em `etapas/etapa03_ola/README.md`.
 
+## Atualizar a pasta local
+
+As mudanças são enviadas direto para este repositório. Para trazer a versão mais recente para o computador:
+
+```bash
+cd ~/Desktop/"Projeto Arduíno"
+git pull
+```
+
 ## Status
 
 Etapas 3 a 11 compilam para a placa e foram testadas no simulador; falta testar na placa de verdade.

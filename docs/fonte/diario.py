@@ -103,6 +103,8 @@ DECISOES = [
      "O Wi-Fi é um extra: um problema de rede nunca pode travar a partida."),
     ("24/11/2026", "Testar no PC com um simulador (LovyanGFX + SDL), em vez de um Arduino barato.",
      "Um Arduino Uno tem 2 KB de memória e não consegue guardar uma tela de 800×480 (~750 KB). O simulador roda exatamente o mesmo código da placa, de graça."),
+    ("24/11/2026", "Versionar o projeto no GitHub; o Claude faz os commits e o Enzo atualiza a pasta local com git pull.",
+     "Histórico de cada mudança e backup fora do computador. O Claude não grava mais direto na pasta local, para o git pull não dar conflito."),
     ("24/11/2026", "Trabalhar em mini tarefas, uma etapa por vez.",
      "Pedido do Enzo, para aprender aos poucos e acompanhar o projeto."),
 ]
@@ -121,6 +123,8 @@ HISTORICO = [
     ("24/11/2026", "Etapas 4 a 11 montadas sem a placa: touch, um painel, quatro painéis girados e o visor completo "
                    "(menu, barra superior, veneno/energia, comandante e histórico). Todas compilam para a placa e foram "
                    "testadas no simulador com toques automáticos. O simulador passou a compilar os .cpp da pasta da etapa."),
+    ("24/11/2026", "Projeto publicado no GitHub (github.com/ensosampaio/visor-vida-mtg, privado). A partir daqui, o Claude faz commit e "
+                   "push direto no repositório, e a pasta local é atualizada com git pull."),
 ]
 
 # ----------------------------------------------------------------------------------- montagem
