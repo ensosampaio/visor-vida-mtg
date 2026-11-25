@@ -63,6 +63,9 @@ tela sem mexer nas regras, e testar as regras sem tela. Foi o que aconteceu na t
   O primeiro toque, se ninguém começou ainda, começa pelo P1.
 - **FIRST** sorteia quem começa e já inicia a rodada 1 (`Game::startTurns()`).
 - **Segurar o meio de um painel** (0,7 s) corrige à mão: "agora é a vez deste jogador" (`Game::setTurn()`, toque longo em `App::update()`).
+- **Sentido horário:** os jogadores são numerados em volta da mesa — P1 em cima à esquerda, P2 em cima à direita,
+  P3 embaixo à direita, P4 embaixo à esquerda (com 3: P1 em cima, P2 embaixo à direita, P3 embaixo à esquerda).
+  Assim o turno passa P1 → P2 → P3 → P4 (`App::layoutPanels()`).
 - `Game::passTurn()` pula eliminados; a **rodada** sobe quando o turno volta para quem começou (mostrada no meio da tela).
 - Tudo entra no histórico e pode ser desfeito com UNDO, porque o turno faz parte do `State` (a "foto" do UNDO).
 - No menu, **TURNS: ON/OFF** esconde tudo isso para quem não quer usar.

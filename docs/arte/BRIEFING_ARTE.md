@@ -55,6 +55,7 @@ O centro fica livre para o número da vida (e segurar o centro marca "é a vez d
 **Turno:** o painel de quem está jogando aparece **mais claro e com a borda mais grossa**, com "YOUR TURN" no alto.
 Por isso cada painel precisa de uma versão "no turno". Na faixa do meio entram dois botões **PASS TURN**
 (o da direita é girado 180° para quem senta do outro lado) e o número da rodada.
+Os jogadores são numerados no **sentido horário**: P1 em cima à esquerda, P2 em cima à direita, P3 embaixo à direita, P4 embaixo à esquerda.
 
 ## 4. Lista de peças
 

@@ -140,6 +140,9 @@ HISTORICO = [
                    "\"YOUR TURN\"; botões PASS TURN dos dois lados da faixa do meio; FIRST já começa a rodada 1; segurar o meio "
                    "de um painel corrige a vez; eliminados são pulados; rodada contada; tudo no histórico e no UNDO; opção "
                    "TURNS ON/OFF no menu. Painéis passaram de 194 para 180 px de altura; briefing e gabaritos da arte atualizados."),
+    ("25/11/2026", "Correção pedida pelo Enzo: o turno deve seguir o sentido horário. Os jogadores foram reposicionados "
+                   "(P1 em cima à esquerda, P2 em cima à direita, P3 embaixo à direita, P4 embaixo à esquerda; com 3, P2 embaixo "
+                   "à direita e P3 embaixo à esquerda), e o turno passa P1 → P2 → P3 → P4."),
 ]
 
 # ----------------------------------------------------------------------------------- montagem

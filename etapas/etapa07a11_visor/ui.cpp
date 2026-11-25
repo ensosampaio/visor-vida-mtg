@@ -288,6 +288,8 @@ void App::renderSetup() {
 
 // Posição de cada painel (em pixels 8-bit). Os de cima ficam de cabeça para baixo
 // (para quem está sentado do outro lado da mesa).
+// A numeração segue o SENTIDO HORÁRIO em volta da mesa (P1 -> P2 -> P3 -> P4),
+// que é a ordem em que o turno passa.
 void App::layoutPanels(Rect* r, bool* rot, int n) const {
   const int16_t L = 3, TOP_Y = 24, BOT_Y = 147, PH = 90;   // faixa do meio: y 114..146
   const int16_t LW = 195, RX = 202, RW = 195, FW = 394;
@@ -299,13 +301,14 @@ void App::layoutPanels(Rect* r, bool* rot, int n) const {
       r[1] = {L, BOT_Y, FW, PH}; rot[1] = false; break;
     case 3:
       r[0] = {L, TOP_Y, FW, PH}; rot[0] = true;
-      r[1] = {L, BOT_Y, LW, PH}; rot[1] = false;
-      r[2] = {RX, BOT_Y, RW, PH}; rot[2] = false; break;
+      r[1] = {RX, BOT_Y, RW, PH}; rot[1] = false;   // embaixo à direita
+      r[2] = {L, BOT_Y, LW, PH};  rot[2] = false; break; // embaixo à esquerda
     default:
-      r[0] = {L, TOP_Y, LW, PH};  rot[0] = true;
-      r[1] = {RX, TOP_Y, RW, PH}; rot[1] = true;
-      r[2] = {L, BOT_Y, LW, PH};  rot[2] = false;
-      r[3] = {RX, BOT_Y, RW, PH}; rot[3] = false; break;
+      r[0] = {L, TOP_Y, LW, PH};  rot[0] = true;    // P1: em cima à esquerda
+      r[1] = {RX, TOP_Y, RW, PH}; rot[1] = true;    // P2: em cima à direita
+      r[2] = {RX, BOT_Y, RW, PH}; rot[2] = false;   // P3: embaixo à direita
+      r[3] = {L, BOT_Y, LW, PH};  rot[3] = false;   // P4: embaixo à esquerda
+      break;
   }
 }
 

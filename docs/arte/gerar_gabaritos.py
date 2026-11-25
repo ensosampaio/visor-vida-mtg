@@ -45,7 +45,7 @@ for i, n in enumerate(nomes):
     x = 272 + i * 88
     d.rectangle([x, 6, x + 81, 39], outline=LINHA, width=2)
     d.text((x + 41, 23), n, fill=TXT, font=fonte(11), anchor="mm")
-for j, (x, y, rot) in enumerate([(6, 48, True), (404, 48, True), (6, 294, False), (404, 294, False)]):
+for j, (x, y, rot) in enumerate([(6, 48, True), (404, 48, True), (404, 294, False), (6, 294, False)]):
     caixa(d, x, y, 390, 180, f"P{j+1}" + ("  (GIRADO 180°)" if rot else ""), f=12)
 for i, n in enumerate(["comandante", "energia", "veneno"]):
     x = 298 + i * 70
