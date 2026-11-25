@@ -61,6 +61,9 @@ public:
   void tick(uint32_t now);  // fecha o agrupamento depois de COALESCE_MS
   void flush();             // fecha o agrupamento agora
 
+  // Apaga o histórico (e o UNDO, que depende dele). A partida continua igual.
+  void clearLog();
+
   bool canUndo() const { return undoCount_ > 0 || pending_.active; }
   bool undo();
 

@@ -46,7 +46,8 @@ tela sem mexer nas regras, e testar as regras sem tela. Foi o que aconteceu na t
 ## Onde está cada etapa no código
 
 ### Etapa 7 — Menu inicial e configuração do Commander
-- `App::renderMenu()`: botões COMMANDER, STANDARD, RESUME GAME (volta para a partida em andamento) e LIGHT (brilho).
+- `App::renderMenu()`: botões COMMANDER, STANDARD, RESUME GAME (volta para a partida em andamento), TURNS (liga/desliga o turno),
+  CLEAR LOG (apaga o histórico, com confirmação; a partida continua) e LIGHT (brilho).
 - `App::renderSetup()`: vida inicial (20/30/40) e número de jogadores (1 a 4).
 - `App::layoutPanels()`: posição dos painéis para 1, 2, 3 ou 4 jogadores (os de cima, girados).
 - Ideia-chave: **telas como estados** (`enum class Screen`). O `render()` desenha a tela atual; um toque pode mudar de tela.
@@ -83,7 +84,10 @@ tela sem mexer nas regras, e testar as regras sem tela. Foi o que aconteceu na t
 ### Etapa 11 — Histórico
 - `App::renderLog()`: 10 linhas por página, a mais recente primeiro, com NEWER/OLDER. Cada tipo de evento tem uma cor.
 - `Game::change()` + `Game::flush()`: toques seguidos no mesmo contador, em até 3 s, viram **uma** linha (ex.: "P2 LIFE -3 = 37").
-- O histórico guarda até 200 linhas num buffer circular (`log_` em `game.h`).
+- O histórico guarda até 200 linhas num buffer circular (`log_` em `game.h`): ocupa sempre o mesmo espaço (~12 KB) e,
+  quando enche, as linhas mais antigas são sobrescritas. Por isso ele nunca "pesa" mais com o tempo.
+- **CLEAR LOG** (menu) chama `Game::clearLog()`: apaga o histórico e zera o UNDO (as "fotos" do UNDO apontam para
+  linhas do histórico). Vida, contadores e turno ficam como estão.
 
 ## Testar
 

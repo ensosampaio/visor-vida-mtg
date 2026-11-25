@@ -143,6 +143,9 @@ HISTORICO = [
     ("25/11/2026", "Correção pedida pelo Enzo: o turno deve seguir o sentido horário. Os jogadores foram reposicionados "
                    "(P1 em cima à esquerda, P2 em cima à direita, P3 embaixo à direita, P4 embaixo à esquerda; com 3, P2 embaixo "
                    "à direita e P3 embaixo à esquerda), e o turno passa P1 → P2 → P3 → P4."),
+    ("25/11/2026", "Botão CLEAR LOG no menu principal (com confirmação): apaga o histórico e zera o UNDO, mantendo a partida. "
+                   "Observação: o histórico já ocupa espaço fixo (200 linhas, ~12 KB, as antigas são sobrescritas), então ele "
+                   "não deixa o aparelho mais pesado com o tempo; o botão serve para começar o histórico limpo."),
 ]
 
 # ----------------------------------------------------------------------------------- montagem

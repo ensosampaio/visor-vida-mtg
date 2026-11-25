@@ -205,6 +205,13 @@ void Game::pushUndo() {
   if (undoCount_ < MAX_UNDO) undoCount_++;
 }
 
+void Game::clearLog() {
+  flush();
+  logTotal_ = 0;
+  undoHead_ = undoCount_ = 0;   // as "fotos" do UNDO apontam para linhas que deixaram de existir
+  addLog("HISTORY CLEARED");
+}
+
 bool Game::undo() {
   flush();
   if (undoCount_ == 0) return false;

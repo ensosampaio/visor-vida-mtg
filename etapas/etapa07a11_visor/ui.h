@@ -25,7 +25,7 @@ public:
 
 private:
   enum class Screen : uint8_t { Menu, Setup, Play, Counters, Cmdr, Log };
-  enum class Overlay : uint8_t { None, ConfirmReset, ConfirmMenu };
+  enum class Overlay : uint8_t { None, ConfirmReset, ConfirmMenu, ConfirmClearLog };
   enum Action : uint8_t {
     A_NONE, A_MENU_CMDR, A_MENU_STD, A_MENU_RESUME, A_MENU_BRIGHT,
     A_SETUP_LIFE, A_SETUP_PLAYERS, A_SETUP_BACK,
@@ -35,7 +35,7 @@ private:
     A_CMD_TARGET, A_CMD_FROM, A_CMD_DELTA, A_CMD_APPLY, A_CMD_BACK,
     A_LOG_NEWER, A_LOG_OLDER, A_LOG_BACK,
     A_CONFIRM_YES, A_CONFIRM_NO,
-    A_PASS_TURN, A_SET_TURN, A_MENU_TURNS,
+    A_PASS_TURN, A_SET_TURN, A_MENU_TURNS, A_MENU_CLEARLOG,
   };
   struct Rect { int16_t x, y, w, h; };
   struct Hit { Rect r; uint8_t action; int8_t a, b; bool repeat; bool longPress; };  // longPress: só age depois de segurar

@@ -167,6 +167,9 @@ void App::perform(const Hit& h, int step, uint32_t now) {
     case A_PASS_TURN:   game_.passTurn(); firstPick_ = -1; break;
     case A_SET_TURN:    game_.setTurn(h.a); firstPick_ = -1; break;
     case A_MENU_TURNS:  turnsOn_ = !turnsOn_; break;
+    case A_MENU_CLEARLOG:
+      if (game_.started() && game_.logCount() > 1) overlay_ = Overlay::ConfirmClearLog;
+      break;
     case A_TOP_RESET:   overlay_ = Overlay::ConfirmReset; break;
     case A_TOP_MENU:    overlay_ = Overlay::ConfirmMenu; break;
     case A_ICON_CMDR: {
@@ -205,6 +208,7 @@ void App::perform(const Hit& h, int step, uint32_t now) {
 
     case A_CONFIRM_YES:
       if (overlay_ == Overlay::ConfirmReset) { game_.restart(); locked_ = false; firstPick_ = -1; }
+      else if (overlay_ == Overlay::ConfirmClearLog) { game_.clearLog(); logPage_ = 0; }
       else { game_.flush(); screen_ = Screen::Menu; }
       overlay_ = Overlay::None;
       break;
@@ -251,17 +255,22 @@ void App::renderMenu() {
   gTexto("20 LIFE - 2 PLAYERS", 200, 166, 1, C_CIANO, C_PRETO, CENTRO);
   addHitL(75, 124, 250, 62, A_MENU_STD);
 
+  // linha de baixo: 4 botões de 90x26 (180x52 na tela)
   if (game_.started()) {
-    gBotao(12, 200, 100, 26, EST_BTN_VERDE, "RESUME GAME");
-    addHitL(12, 200, 100, 26, A_MENU_RESUME);
+    gBotao(8, 200, 90, 26, EST_BTN_VERDE, "RESUME GAME");
+    addHitL(8, 200, 90, 26, A_MENU_RESUME);
   }
-  gBotao(150, 200, 100, 26, turnsOn_ ? EST_BTN_SELECIONADO : EST_BTN_NORMAL,
+  gBotao(106, 200, 90, 26, turnsOn_ ? EST_BTN_SELECIONADO : EST_BTN_NORMAL,
          turnsOn_ ? "TURNS: ON" : "TURNS: OFF", 1, turnsOn_ ? C_PRETO : C_BRANCO);
-  addHitL(150, 200, 100, 26, A_MENU_TURNS);
+  addHitL(106, 200, 90, 26, A_MENU_TURNS);
+  bool podeLimpar = game_.started() && game_.logCount() > 1;
+  gBotao(204, 200, 90, 26, podeLimpar ? EST_BTN_VERMELHO : EST_BTN_DESATIVADO, "CLEAR LOG", 1,
+         podeLimpar ? C_BRANCO : C_CINZA);
+  addHitL(204, 200, 90, 26, A_MENU_CLEARLOG);
   char buf[24];
   snprintf(buf, sizeof buf, "LIGHT %d/%d", brightIdx_ + 1, (int)sizeof(BRIGHT));
-  gBotao(288, 200, 100, 26, EST_BTN_ROXO, buf);
-  addHitL(288, 200, 100, 26, A_MENU_BRIGHT);
+  gBotao(302, 200, 90, 26, EST_BTN_ROXO, buf);
+  addHitL(302, 200, 90, 26, A_MENU_BRIGHT);
 }
 
 void App::renderSetup() {
@@ -603,12 +612,14 @@ void App::renderLog() {
 
 void App::renderConfirm() {
   gXadrez(0, 0, TELA_W, TELA_H);                       // escurece o que está atrás
-  bool reset = overlay_ == Overlay::ConfirmReset;
+  const char* titulo = "BACK TO MENU?";
+  const char* detalhe = "THE GAME IS KEPT: USE RESUME";
+  if (overlay_ == Overlay::ConfirmReset)    { titulo = "RESET GAME?";    detalhe = "EVERYONE BACK TO START LIFE"; }
+  if (overlay_ == Overlay::ConfirmClearLog) { titulo = "CLEAR HISTORY?"; detalhe = "GAME KEPT - UNDO RESTARTS"; }
   gCaixa(85, 65, 230, 110, 3, EST_CAIXA, 2, false);
   gContorno(91, 71, 218, 98, 2, C_BRANCO);
-  gTexto(reset ? "RESET GAME?" : "BACK TO MENU?", 200, 80, 2, C_BRANCO, C_PRETO, CENTRO);
-  gTexto(reset ? "EVERYONE BACK TO START LIFE" : "THE GAME IS KEPT: USE RESUME", 200, 102, 1, C_CIANO,
-         C_PRETO, CENTRO);
+  gTexto(titulo, 200, 80, 2, C_BRANCO, C_PRETO, CENTRO);
+  gTexto(detalhe, 200, 102, 1, C_CIANO, C_PRETO, CENTRO);
   gBotao(100, 128, 95, 32, EST_BTN_VERMELHO, "YES", 2);
   addHitL(100, 128, 95, 32, A_CONFIRM_YES);
   gBotao(205, 128, 95, 32, EST_BTN_AZUL, "NO", 2);

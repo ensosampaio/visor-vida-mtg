@@ -32,9 +32,10 @@ d.text((400, 40), "TÍTULO  (y=20 a 62)", fill=DESTAQUE, font=fonte(16, True), a
 d.text((400, 78), "subtítulo (y=72)", fill=TXT, font=fonte(11), anchor="mm")
 caixa(d, 150, 104, 500, 124, "Botão COMMANDER")
 caixa(d, 150, 248, 500, 124, "Botão STANDARD")
-caixa(d, 24, 400, 200, 52, "RESUME GAME", f=10)
-caixa(d, 300, 400, 200, 52, "TURNS: ON / OFF", f=10)
-caixa(d, 576, 400, 200, 52, "LIGHT (brilho)", f=10)
+caixa(d, 16, 400, 180, 52, "RESUME GAME", f=9)
+caixa(d, 212, 400, 180, 52, "TURNS: ON / OFF", f=9)
+caixa(d, 408, 400, 180, 52, "CLEAR LOG", f=9)
+caixa(d, 604, 400, 180, 52, "LIGHT (brilho)", f=9)
 im.save(os.path.join(AQUI, "gabarito_menu.png"))
 
 # 2) Tela de jogo com 4 jogadores
