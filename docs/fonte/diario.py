@@ -84,10 +84,13 @@ ETAPAS = [
 
 # Melhorias de produção (depois que o contador funcionar offline)
 ETAPAS_PROD = [
-    ("13.1", "Gerar a chave de API do Playgroup e testar pelo terminal/Postman (dá para fazer sem a placa)", "Pendente"),
-    ("13.2", "Conectar a placa ao Wi-Fi, guardando senha e chave na memória interna", "Pendente"),
-    ("13.3", "Puxar o setup da partida do Playgroup (jogadores, decks e vida inicial)", "Pendente"),
-    ("13.4", "Enviar os eventos da partida (dano, comandante, veneno) para o Playgroup", "Pendente"),
+    ("13.1", "Gerar a chave e rodar docs/playgroup/testar_api.sh, sem partida e com uma partida em andamento no celular (sem a placa)", "Pendente"),
+    ("13.2", "Simulador: tela PLAYGROUP com dados de teste; escolher a partida e montar a mesa com nomes e decks (sem a placa)", "Pendente"),
+    ("13.3", "Placa: Wi-Fi + portal de configuração no celular; senha e chave na memória interna", "Pendente"),
+    ("13.4", "Placa: puxar playgroups, partidas em andamento e decks", "Pendente"),
+    ("13.5", "Arte do comandante no painel (download, cache e desenho)", "Pendente"),
+    ("13.6", "Enviar eventos em lote (a cada PASS TURN e no fim), com fila offline", "Pendente"),
+    ("13.7", "Extras: ELO antes da partida, elogios (endorsements) no fim, ficha do comandante", "Pendente"),
 ]
 
 DECISOES = [
@@ -148,6 +151,10 @@ HISTORICO = [
                    "não deixa o aparelho mais pesado com o tempo; o botão serve para começar o histórico limpo."),
     ("25/11/2026", "Linha de baixo do menu sempre centralizada: sem partida, TURNS, CLEAR LOG e LIGHT ficam no meio; "
                    "quando o RESUME GAME aparece, ele entra à esquerda e empurra os outros."),
+    ("25/11/2026", "Estudo da API do Playgroup.gg (docs/playgroup): a partida nasce no app do celular e o visor a encontra pela lista de "
+                   "partidas do playgroup; envio de eventos em lote só para partidas em que o dono da chave joga; POST /live_sessions é da "
+                   "mesa virtual online e não serve para papel. Pontos a testar com a chave: partida em andamento aparece na API, nomes "
+                   "dos eventos e ordem dos assentos. Script testar_api.sh e etapa 13 replanejada (13.1 a 13.7)."),
 ]
 
 # ----------------------------------------------------------------------------------- montagem
@@ -306,6 +313,7 @@ rows = [["Pasta", "Conteúdo"],
         ["simulador/", "CMakeLists.txt, main.cpp e arduino_shim.h (imita Serial, delay e millis no PC) e o README.md."],
         ["rascunho/LifeCounter/", "Primeiro rascunho do firmware (substituído por etapas/etapa07a11_visor)."],
         ["docs/fonte/", "Script e imagens que geram este diário."],
+        ["docs/playgroup/", "Estudo da API do Playgroup.gg (Markdown e PDF) e script de teste da chave (testar_api.sh)."],
         ["docs/arte/", "Briefing para o artista (BRIEFING_ARTE.md e Briefing_Arte.pdf) e gabaritos das telas em tamanho real."]]
 s += [Spacer(1, 3 * mm), table(rows, [48 * mm, W - 48 * mm])]
 s += [Spacer(1, 3 * mm), Table([[Image(f"{IMG}/visor_jogo.png", simw, simw * 480 / 800),
@@ -326,7 +334,10 @@ rows = [["Objetivo", "Como", "Situação"],
          "Possível, com um passo no celular: a API <b>não cria partidas</b>. A partida é criada no app e o visor procura a mais recente sem <font name=\"Courier\">ended_at</font> (não há filtro de partida em andamento)."],
         ["Enviar o que acontece na mesa", "POST /games/{game_id}/events/batch: eventos com tipo, jogador de origem (\"0\" a \"5\"), alvo, turno, valor e comandante.",
          "Possível, mas a lista de tipos de evento não está documentada (só cita Damage, Kill, PassTurn). Confirmar no Discord deles ou testando."],
-        ["Mostrar dados extras", "GET /me, /users/{id}/decks, /decks/{id} e estatísticas de comandantes.", "Possível."]]
+        ["Mostrar dados extras", "GET /decks/{id} (comandante com imagem), /decks/{id}/elo_history, /commanders/by_name e /commanders/{id}/turn_damage.",
+         "Possível: arte do comandante no painel, ELO de cada deck, estatísticas e elogios (Endorsement) no fim."],
+        ["Criar partida pelo visor", "POST /live_sessions existe, mas cria uma sala do <b>Playgroup Live</b> (mesa virtual online).",
+         "<b>Não serve</b> para jogo de papel. A partida continua sendo criada no app do celular."]]
 s += [table(rows, [36 * mm, (W - 36 * mm) * 0.5, (W - 36 * mm) * 0.5])]
 s += [P("Regras e cuidados", h2)]
 s += bullets([
@@ -336,6 +347,8 @@ s += bullets([
     "Senha do Wi-Fi e chave da API ficam na memória interna da placa, nunca no código que vai para o Git.",
     "Se a rede cair, o visor continua funcionando normalmente e envia depois.",
 ])
+s += [P("Estudo completo (25/11/2026): <b>docs/playgroup/ESTUDO_API_PLAYGROUP.md</b> (e o PDF ao lado), com o fluxo "
+        "\"começa no celular, puxa no visor\", o que ainda precisa ser testado e o script <b>testar_api.sh</b>, que só faz leituras e não guarda a chave.", body)]
 s += [P('Documentação: <link href="https://playgroup.gg/api-docs/index.html" color="#1636D8">playgroup.gg/api-docs</link> · '
         '<link href="https://playgroup.gg/.well-known/openapi.yaml" color="#1636D8">especificação OpenAPI</link>', small)]
 

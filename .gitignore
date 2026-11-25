@@ -12,3 +12,6 @@ Claude outputs/
 *.swp
 .vscode/
 .idea/
+
+# Respostas da API do Playgroup (dados da sua conta)
+docs/playgroup/respostas/
