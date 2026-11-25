@@ -255,22 +255,30 @@ void App::renderMenu() {
   gTexto("20 LIFE - 2 PLAYERS", 200, 166, 1, C_CIANO, C_PRETO, CENTRO);
   addHitL(75, 124, 250, 62, A_MENU_STD);
 
-  // linha de baixo: 4 botões de 90x26 (180x52 na tela)
-  if (game_.started()) {
-    gBotao(8, 200, 90, 26, EST_BTN_VERDE, "RESUME GAME");
-    addHitL(8, 200, 90, 26, A_MENU_RESUME);
+  // linha de baixo: botões de 90x26 (180x52 na tela), sempre centralizados.
+  // RESUME GAME só aparece com partida em andamento e empurra os outros para o lado.
+  const int bw = 90, bh = 26, gap = 8, by = 200;
+  bool resume = game_.started();
+  int qtd = resume ? 4 : 3;
+  int x = (TELA_W - (qtd * bw + (qtd - 1) * gap)) / 2;
+  if (resume) {
+    gBotao(x, by, bw, bh, EST_BTN_VERDE, "RESUME GAME");
+    addHitL(x, by, bw, bh, A_MENU_RESUME);
+    x += bw + gap;
   }
-  gBotao(106, 200, 90, 26, turnsOn_ ? EST_BTN_SELECIONADO : EST_BTN_NORMAL,
+  gBotao(x, by, bw, bh, turnsOn_ ? EST_BTN_SELECIONADO : EST_BTN_NORMAL,
          turnsOn_ ? "TURNS: ON" : "TURNS: OFF", 1, turnsOn_ ? C_PRETO : C_BRANCO);
-  addHitL(106, 200, 90, 26, A_MENU_TURNS);
+  addHitL(x, by, bw, bh, A_MENU_TURNS);
+  x += bw + gap;
   bool podeLimpar = game_.started() && game_.logCount() > 1;
-  gBotao(204, 200, 90, 26, podeLimpar ? EST_BTN_VERMELHO : EST_BTN_DESATIVADO, "CLEAR LOG", 1,
+  gBotao(x, by, bw, bh, podeLimpar ? EST_BTN_VERMELHO : EST_BTN_DESATIVADO, "CLEAR LOG", 1,
          podeLimpar ? C_BRANCO : C_CINZA);
-  addHitL(204, 200, 90, 26, A_MENU_CLEARLOG);
+  addHitL(x, by, bw, bh, A_MENU_CLEARLOG);
+  x += bw + gap;
   char buf[24];
   snprintf(buf, sizeof buf, "LIGHT %d/%d", brightIdx_ + 1, (int)sizeof(BRIGHT));
-  gBotao(302, 200, 90, 26, EST_BTN_ROXO, buf);
-  addHitL(302, 200, 90, 26, A_MENU_BRIGHT);
+  gBotao(x, by, bw, bh, EST_BTN_ROXO, buf);
+  addHitL(x, by, bw, bh, A_MENU_BRIGHT);
 }
 
 void App::renderSetup() {

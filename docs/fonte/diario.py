@@ -146,6 +146,8 @@ HISTORICO = [
     ("25/11/2026", "Botão CLEAR LOG no menu principal (com confirmação): apaga o histórico e zera o UNDO, mantendo a partida. "
                    "Observação: o histórico já ocupa espaço fixo (200 linhas, ~12 KB, as antigas são sobrescritas), então ele "
                    "não deixa o aparelho mais pesado com o tempo; o botão serve para começar o histórico limpo."),
+    ("25/11/2026", "Linha de baixo do menu sempre centralizada: sem partida, TURNS, CLEAR LOG e LIGHT ficam no meio; "
+                   "quando o RESUME GAME aparece, ele entra à esquerda e empurra os outros."),
 ]
 
 # ----------------------------------------------------------------------------------- montagem
