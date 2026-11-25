@@ -9,7 +9,8 @@ são desenhados só com retângulos pelo motor `gfx8`, sem nenhuma imagem. Os pr
 | Tela | |
 |---|---|
 | Menu e configuração (etapa 7) | ![](07_menu.png) ![](07_configuracao.png) |
-| Jogo, sorteio do FIRST e confirmação do RESET (etapa 8) | ![](08_jogo.png) ![](08_first.png) ![](08_confirmar.png) |
+| Jogo com turno, sorteio do FIRST e confirmação do RESET (etapa 8) | ![](08_jogo.png) ![](08_first.png) ![](08_confirmar.png) |
+| Turno pulando o jogador eliminado | ![](08_turno_pulando.png) |
 | Veneno (etapa 9) | ![](09_veneno.png) |
 | Dano de comandante (etapa 10) | ![](10_comandante.png) ![](10_jogo_final.png) |
 | Histórico (etapa 11) | ![](11_historico.png) |
@@ -33,7 +34,7 @@ tela sem mexer nas regras, e testar as regras sem tela. Foi o que aconteceu na t
 ## Como o desenho 8-bit funciona
 
 - **Pixels 8-bit:** as telas são montadas numa grade de 400x240; cada "pixel 8-bit" vira um quadradinho de 2x2
-  na tela de 800x480. Por isso as posições em `ui.cpp` são a metade das medidas da tela (o painel de 390x194 vira 195x97).
+  na tela de 800x480. Por isso as posições em `ui.cpp` são a metade das medidas da tela (o painel de 390x180 vira 195x90).
   Os toques continuam em pixels reais: `addHitL()` faz a conversão.
 - **Uma função só fala com a tela:** o motor só sabe pintar retângulos (`portaPreencher`, em `ui.cpp`), que pinta no
   sprite da LovyanGFX. Trocar de biblioteca gráfica é mexer nessa função.
@@ -55,6 +56,17 @@ tela sem mexer nas regras, e testar as regras sem tela. Foi o que aconteceu na t
 - **LOCK** trava os painéis contra toques acidentais. **FIRST** sorteia quem começa (o painel pisca e mostra "GOES FIRST!").
 - **RESET** e **MENU** pedem confirmação (`App::renderConfirm()`).
 - **UNDO** (`Game::undo()`): antes de cada ação, o jogo guarda uma "foto" do estado (`pushUndo()`); desfazer é voltar para a última foto.
+
+### Turno (melhoria pedida em 25/11/2026)
+- O painel de quem está jogando fica **mais claro e com a borda mais grossa** (`EST_TURNO` em `ui.cpp`), com "YOUR TURN" no alto.
+- **PASS TURN**: dois botões na faixa do meio, o da direita girado para quem senta em cima (`App::passButton()`).
+  O primeiro toque, se ninguém começou ainda, começa pelo P1.
+- **FIRST** sorteia quem começa e já inicia a rodada 1 (`Game::startTurns()`).
+- **Segurar o meio de um painel** (0,7 s) corrige à mão: "agora é a vez deste jogador" (`Game::setTurn()`, toque longo em `App::update()`).
+- `Game::passTurn()` pula eliminados; a **rodada** sobe quando o turno volta para quem começou (mostrada no meio da tela).
+- Tudo entra no histórico e pode ser desfeito com UNDO, porque o turno faz parte do `State` (a "foto" do UNDO).
+- No menu, **TURNS: ON/OFF** esconde tudo isso para quem não quer usar.
+- Para abrir espaço para os botões, os painéis ficaram um pouco mais baixos (194 → 180 px).
 
 ### Etapa 9 — Veneno e energia
 - `App::renderCounters()`: uma linha por jogador com −, valor e +. A mesma tela serve para veneno (gota) e energia (raio).

@@ -35,9 +35,10 @@ private:
     A_CMD_TARGET, A_CMD_FROM, A_CMD_DELTA, A_CMD_APPLY, A_CMD_BACK,
     A_LOG_NEWER, A_LOG_OLDER, A_LOG_BACK,
     A_CONFIRM_YES, A_CONFIRM_NO,
+    A_PASS_TURN, A_SET_TURN, A_MENU_TURNS,
   };
   struct Rect { int16_t x, y, w, h; };
-  struct Hit { Rect r; uint8_t action; int8_t a, b; bool repeat; };
+  struct Hit { Rect r; uint8_t action; int8_t a, b; bool repeat; bool longPress; };  // longPress: só age depois de segurar
 
   // desenho
   void render(uint32_t now);
@@ -51,12 +52,14 @@ private:
   void renderConfirm();
   void topBar();
   void iconButton(int x, int y, uint8_t icon, Action act);
+  void passButton(int x, int y, bool rotated);
 
   // toques
-  void addHit(Rect r, Action act, int a = 0, int b = 0, bool repeat = false);       // r em pixels da tela
+  void addHit(Rect r, Action act, int a = 0, int b = 0, bool repeat = false, bool longPress = false);       // r em pixels da tela
   void addHitL(int x, int y, int w, int h, Action act, int a = 0, int b = 0,
                bool repeat = false);                                                // em pixels 8-bit
-  void addPanelHit(Rect panel, bool rotated, Rect local, Action act, int a, int b, bool repeat);
+  void addPanelHit(Rect panel, bool rotated, Rect local, Action act, int a, int b, bool repeat,
+                   bool longPress = false);
   const Hit* hitAt(int x, int y) const;
   void perform(const Hit& h, int step, uint32_t now);
 
@@ -78,6 +81,8 @@ private:
   bool holding_ = false;
   uint32_t nextRepeat_ = 0;
   int repeatCount_ = 0;
+  bool longArmed_ = false;   // toque longo esperando completar
+  uint32_t longAt_ = 0;
 
   bool dirty_ = true;
   uint32_t lastFrame_ = 0;
@@ -91,4 +96,5 @@ private:
   int brightIdx_ = 3;
   int firstPick_ = -1;
   uint32_t firstStart_ = 0;
+  bool turnsOn_ = true;      // mostrar de quem é o turno (opção no menu)
 };

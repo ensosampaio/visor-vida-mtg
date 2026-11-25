@@ -21,6 +21,17 @@ void portaPreencher(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t cor) {
   g_alvo->fillRect(x, y, w, h, cor);   // uint16_t = cor RGB565 para a LovyanGFX
 }
 
+static constexpr uint32_t LONG_PRESS_MS = 700;   // segurar o meio do painel = "é a vez deste jogador"
+
+// Painel de quem está no turno: fundo mais claro (a borda fica mais grossa no desenho).
+static const Estilo EST_TURNO[4] = {
+  {C_CIANO,   C_AZUL_M,   C_AZUL},     // P1
+  {C_LIMA,    C_VERDE_E2, C_VERDE_M},  // P2
+  {C_LARANJA, C_VERM_M,   C_VERMELHO}, // P3
+  {C_MAGENTA, C_VIOLETA,  C_MAGENTA},  // P4
+};
+static const Estilo EST_PASSAR = {C_OURO, C_MARROM, C_OURO_E};
+
 // estilos usados só nesta tela
 static const Estilo EST_NEUTRO  = {C_CINZA_C, C_PRETO, SEM_TEXTURA};
 static const Estilo EST_CAIXA   = {C_OURO, C_PRETO, SEM_TEXTURA};
@@ -51,12 +62,25 @@ void App::update(bool touched, int x, int y, uint32_t now) {
   if (touched && !down_) {                  // dedo acabou de encostar
     down_ = true;
     const Hit* h = hitAt(x, y);
-    if (h) {
+    if (h && h->longPress) {                 // toque longo: só conta depois de segurar
+      held_ = *h;
+      holding_ = false;
+      longArmed_ = true;
+      longAt_ = now + LONG_PRESS_MS;
+    } else if (h) {
       held_ = *h;
       holding_ = h->repeat;
       repeatCount_ = 0;
       nextRepeat_ = now + 450;
       perform(*h, 1, now);
+      dirty_ = true;
+    }
+  } else if (touched && down_ && longArmed_) { // esperando o toque longo completar
+    bool inside = x >= held_.r.x && x < held_.r.x + held_.r.w && y >= held_.r.y && y < held_.r.y + held_.r.h;
+    if (!inside) longArmed_ = false;
+    else if ((int32_t)(now - longAt_) >= 0) {
+      longArmed_ = false;
+      perform(held_, 1, now);
       dirty_ = true;
     }
   } else if (touched && down_ && holding_) { // segurando um botão de +/-
@@ -72,6 +96,7 @@ void App::update(bool touched, int x, int y, uint32_t now) {
   } else if (!touched && down_) {           // dedo saiu
     down_ = false;
     holding_ = false;
+    longArmed_ = false;
   }
 
   static bool wasAnimating = false;
@@ -90,18 +115,18 @@ void App::update(bool touched, int x, int y, uint32_t now) {
 }
 
 // ---------------------------------------------------------------- toques
-void App::addHit(Rect r, Action act, int a, int b, bool repeat) {
+void App::addHit(Rect r, Action act, int a, int b, bool repeat, bool longPress) {
   if (hitCount_ >= (int)(sizeof(hits_) / sizeof(hits_[0]))) return;
-  hits_[hitCount_++] = Hit{r, (uint8_t)act, (int8_t)a, (int8_t)b, repeat};
+  hits_[hitCount_++] = Hit{r, (uint8_t)act, (int8_t)a, (int8_t)b, repeat, longPress};
 }
 
 // Converte uma área do painel (coordenadas do próprio painel) para coordenadas da tela,
 // levando em conta se o painel está de cabeça para baixo.
-void App::addPanelHit(Rect p, bool rotated, Rect l, Action act, int a, int b, bool repeat) {
+void App::addPanelHit(Rect p, bool rotated, Rect l, Action act, int a, int b, bool repeat, bool longPress) {
   Rect s;
   if (rotated) s = Rect{(int16_t)(p.x + p.w - (l.x + l.w)), (int16_t)(p.y + p.h - (l.y + l.h)), l.w, l.h};
   else         s = Rect{(int16_t)(p.x + l.x), (int16_t)(p.y + l.y), l.w, l.h};
-  addHit(s, act, a, b, repeat);
+  addHit(s, act, a, b, repeat, longPress);
 }
 
 const App::Hit* App::hitAt(int x, int y) const {
@@ -136,11 +161,12 @@ void App::perform(const Hit& h, int step, uint32_t now) {
       int n = game_.numPlayers();
       firstPick_ = (int)(hooks_.randomN ? hooks_.randomN(n) : 0);
       firstStart_ = now;
-      char buf[32];
-      snprintf(buf, sizeof buf, "P%d GOES FIRST", firstPick_ + 1);
-      game_.event(buf);
+      game_.startTurns(firstPick_);   // registra "P2 GOES FIRST" e começa a rodada 1
       break;
     }
+    case A_PASS_TURN:   game_.passTurn(); firstPick_ = -1; break;
+    case A_SET_TURN:    game_.setTurn(h.a); firstPick_ = -1; break;
+    case A_MENU_TURNS:  turnsOn_ = !turnsOn_; break;
     case A_TOP_RESET:   overlay_ = Overlay::ConfirmReset; break;
     case A_TOP_MENU:    overlay_ = Overlay::ConfirmMenu; break;
     case A_ICON_CMDR: {
@@ -229,6 +255,9 @@ void App::renderMenu() {
     gBotao(12, 200, 100, 26, EST_BTN_VERDE, "RESUME GAME");
     addHitL(12, 200, 100, 26, A_MENU_RESUME);
   }
+  gBotao(150, 200, 100, 26, turnsOn_ ? EST_BTN_SELECIONADO : EST_BTN_NORMAL,
+         turnsOn_ ? "TURNS: ON" : "TURNS: OFF", 1, turnsOn_ ? C_PRETO : C_BRANCO);
+  addHitL(150, 200, 100, 26, A_MENU_TURNS);
   char buf[24];
   snprintf(buf, sizeof buf, "LIGHT %d/%d", brightIdx_ + 1, (int)sizeof(BRIGHT));
   gBotao(288, 200, 100, 26, EST_BTN_ROXO, buf);
@@ -260,7 +289,7 @@ void App::renderSetup() {
 // Posição de cada painel (em pixels 8-bit). Os de cima ficam de cabeça para baixo
 // (para quem está sentado do outro lado da mesa).
 void App::layoutPanels(Rect* r, bool* rot, int n) const {
-  const int16_t L = 3, TOP_Y = 24, BOT_Y = 140, PH = 97;
+  const int16_t L = 3, TOP_Y = 24, BOT_Y = 147, PH = 90;   // faixa do meio: y 114..146
   const int16_t LW = 195, RX = 202, RW = 195, FW = 394;
   switch (n) {
     case 1:
@@ -308,13 +337,35 @@ void App::renderPlay(uint32_t now) {
 
   topBar();
 
-  // faixa central: barras-corrente e os 3 botões de ícone
-  int sy = (n == 1) ? 25 : 122;
-  gBarra(4, sy + 7, 140, C_OURO);
-  gBarra(257, sy + 7, 140, C_LIMA);
+  // faixa central: botões de passar o turno (um de cada lado), rodada e os 3 botões de ícone
+  bool turns = turnsOn_ && n > 1;
+  int sy = (n == 1) ? 25 : 126;
+  if (turns) {
+    passButton(4, 116, false);     // lido por quem está embaixo
+    passButton(296, 116, true);    // de cabeça para baixo, para quem está em cima
+    char buf[24];
+    if (game_.turnPlayer() >= 0) snprintf(buf, sizeof buf, "ROUND %d", game_.round());
+    else snprintf(buf, sizeof buf, "NO TURN YET");
+    gTexto(buf, 200, 116, 1, C_OURO, C_PRETO, CENTRO);
+    gBarra(108, sy + 7, 38, C_OURO);
+    gBarra(254, sy + 7, 38, C_LIMA);
+  } else {
+    gBarra(4, sy + 7, 140, C_OURO);
+    gBarra(257, sy + 7, 140, C_LIMA);
+  }
   iconButton(149, sy, ICO_COROA, A_ICON_CMDR);
   iconButton(184, sy, ICO_RAIO, A_ICON_ENERGY);
   iconButton(219, sy, ICO_GOTA, A_ICON_POISON);
+}
+
+// Botão "PASS TURN" (100x28 em pixels 8-bit = 200x56 na tela).
+void App::passButton(int x, int y, bool rotated) {
+  const int w = 100, h = 28;
+  bool en = game_.winner() < 0;
+  gOrigem(x, y, w, h, rotated);
+  gBotao(0, 0, w, h, en ? EST_PASSAR : EST_BTN_DESATIVADO, "PASS TURN >", 1, en ? C_OURO : C_CINZA);
+  gOrigemReset();
+  addHitL(x, y - 1, w, h + 2, A_PASS_TURN);
 }
 
 // Um painel de jogador. Tudo é desenhado nas coordenadas do jogador "de baixo";
@@ -333,13 +384,17 @@ void App::renderPanel(int i, Rect r, bool rotated, uint32_t now) {
     else if (t < 4000) hl = (i == firstPick_);
   }
 
+  // turno: só aparece com a opção ligada e fora da animação do sorteio
+  bool sorteando = firstPick_ >= 0 && now - firstStart_ < 1500;
+  bool turn = turnsOn_ && game_.numPlayers() > 1 && !out && !sorteando && game_.turnPlayer() == i;
+
   gOrigem(r.x, r.y, w, h, rotated);
-  Estilo e = out ? EST_ELIMINADO : EST_JOGADOR[i];
+  Estilo e = out ? EST_ELIMINADO : (turn ? EST_TURNO[i] : EST_JOGADOR[i]);
   if (hl) e.borda = C_BRANCO;
-  gCaixa(0, 0, w, h, 3, e, 2, true);
+  gCaixa(0, 0, w, h, 3, e, turn ? 4 : 2, true);       // no turno: borda com o dobro da grossura
   if (out) gRet(6, 5, w - 12, 3, C_VERMELHO);         // faixa vermelha do eliminado
 
-  int cy = h / 2;
+  int cy = h / 2 + (big ? 0 : 3);   // um pouco abaixo do meio: deixa espaço para "YOUR TURN"
   bool largo = w > 200;
   bool apagado = out || locked_;
   gSinal('-', largo ? 58 : 25, cy - 2, apagado);
@@ -382,7 +437,9 @@ void App::renderPanel(int i, Rect r, bool rotated, uint32_t now) {
   } else if (game_.winner() == i) {
     gTexto("WINNER!", w / 2, 6, 2, C_LIMA, C_PRETO, CENTRO);
   } else if (firstPick_ == i && now - firstStart_ >= 1500 && now - firstStart_ < 4000) {
-    gTexto("GOES FIRST!", w / 2, 6, 2, C_CIANO, C_PRETO, CENTRO);
+    gTexto("GOES FIRST!", w / 2, 7, 2, C_CIANO, C_PRETO, CENTRO);
+  } else if (turn) {
+    gTexto("YOUR TURN", w / 2, 7, 2, C_OURO, C_PRETO, CENTRO);
   }
   gOrigemReset();
 
@@ -392,6 +449,9 @@ void App::renderPanel(int i, Rect r, bool rotated, uint32_t now) {
     int16_t zone = std::min(w / 3, 85) * ESCALA, ph = h * ESCALA;
     addPanelHit(p, rotated, Rect{0, 0, zone, ph}, A_LIFE, i, -1, true);
     addPanelHit(p, rotated, Rect{(int16_t)(p.w - zone), 0, zone, ph}, A_LIFE, i, +1, true);
+    // meio do painel: segurar = "agora é a vez deste jogador"
+    if (turnsOn_ && game_.numPlayers() > 1)
+      addPanelHit(p, rotated, Rect{zone, 0, (int16_t)(p.w - 2 * zone), ph}, A_SET_TURN, i, 0, false, true);
   }
 }
 
@@ -506,6 +566,7 @@ static uint16_t corDoEvento(const char* t) {
   if (strstr(t, "POISON"))   return C_LIMA;
   if (strstr(t, "ENERGY"))   return C_CIANO;
   if (strstr(t, "FIRST"))    return C_CREME;
+  if (strstr(t, " TURN"))    return C_LARANJA;
   return C_BRANCO;
 }
 

@@ -21,6 +21,9 @@ void Game::newGame(Format f, uint8_t players, int16_t life) {
   s_.numPlayers = players;
   s_.startLife = life;
   for (int i = 0; i < MAX_PLAYERS; i++) s_.p[i].life = life;
+  s_.turn = -1;
+  s_.first = -1;
+  s_.round = 0;
   pending_ = Pending{};
   undoHead_ = undoCount_ = 0;
   logTotal_ = 0;
@@ -126,6 +129,53 @@ void Game::event(const char* text) {
   flush();
   pushUndo();
   addLog(text);
+}
+
+void Game::startTurns(uint8_t first) {
+  if (first >= s_.numPlayers) return;
+  flush();
+  pushUndo();
+  s_.turn = first;
+  s_.first = first;
+  s_.round = 1;
+  char buf[LOG_LEN];
+  snprintf(buf, sizeof buf, "P%d GOES FIRST - ROUND 1", first + 1);
+  addLog(buf);
+}
+
+void Game::passTurn() {
+  if (s_.turn < 0) {                      // ninguém começou ainda: começa o primeiro vivo
+    for (int i = 0; i < s_.numPlayers; i++) if (!isOut(i)) { startTurns(i); return; }
+    return;
+  }
+  if (winner() >= 0 || alivePlayers() == 0) return;   // partida acabou
+  int n = s_.numPlayers, next = -1;
+  bool newRound = false;
+  for (int k = 1; k <= n; k++) {
+    int idx = (s_.turn + k) % n;
+    if (idx == s_.first) newRound = true;  // deu a volta na mesa
+    if (!isOut(idx)) { next = idx; break; }
+  }
+  if (next < 0) return;
+  flush();
+  pushUndo();
+  s_.turn = (int8_t)next;
+  if (newRound) s_.round++;
+  char buf[LOG_LEN];
+  snprintf(buf, sizeof buf, "P%d TURN - ROUND %d", next + 1, s_.round);
+  addLog(buf);
+}
+
+void Game::setTurn(uint8_t p) {
+  if (p >= s_.numPlayers) return;
+  if (s_.turn < 0) { startTurns(p); return; }
+  if (s_.turn == p) return;
+  flush();
+  pushUndo();
+  s_.turn = (int8_t)p;
+  char buf[LOG_LEN];
+  snprintf(buf, sizeof buf, "P%d TURN (SET BY HAND)", p + 1);
+  addLog(buf);
 }
 
 void Game::logOutIfNeeded(uint8_t p, bool wasOut) {

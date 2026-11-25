@@ -30,6 +30,9 @@ struct State {
   uint8_t numPlayers;
   int16_t startLife;
   Player  p[MAX_PLAYERS];
+  int8_t  turn;     // de quem é o turno (-1 = turnos ainda não começaram)
+  int8_t  first;    // quem começou (a rodada sobe quando o turno volta para ele)
+  int16_t round;    // rodada atual (1, 2, 3...)
 };
 
 class Game {
@@ -47,6 +50,13 @@ public:
   void applyCommander(uint8_t target, uint8_t from, int16_t dmg, uint32_t now);
   // Registra um evento avulso no histórico (ex.: quem começa). Pode ser desfeito.
   void event(const char* text);
+
+  // Turnos. Tudo entra no histórico e pode ser desfeito.
+  void startTurns(uint8_t first);  // 'first' começa; rodada 1
+  void passTurn();                 // passa para o próximo jogador vivo (pula eliminados)
+  void setTurn(uint8_t p);         // corrige à mão de quem é o turno
+  int  turnPlayer() const { return s_.turn; }
+  int  round() const { return s_.round; }
 
   void tick(uint32_t now);  // fecha o agrupamento depois de COALESCE_MS
   void flush();             // fecha o agrupamento agora

@@ -12,7 +12,7 @@ from reportlab.platypus import (BaseDocTemplate, PageTemplate, Frame, Paragraph,
 
 OUT = sys.argv[1] if len(sys.argv) > 1 else "Diario_do_Projeto.pdf"
 IMG = sys.argv[2] if len(sys.argv) > 2 else "."
-ATUALIZADO = "24/11/2026"
+ATUALIZADO = "25/11/2026"
 
 # Fontes padrão do PDF (Helvetica/Courier): não são embutidas, o arquivo fica pequeno.
 
@@ -56,19 +56,19 @@ def table(rows, widths, header=True, zebra=True, extra=None):
     return t
 
 def status(s):
-    c = {"Concluída": OK, "Em andamento": WARN, "Pendente": TODO, "Rascunho pronto": BLUE, "Pronto no simulador": BLUE}[s]
+    c = {"Concluída": OK, "Em andamento": WARN, "Pendente": TODO, "Rascunho pronto": BLUE, "Pronto no simulador": BLUE, "Comprada, aguardando entrega": WARN}[s]
     return Paragraph(f'<font color="{c.hexval()}"><b>{s}</b></font>', cell)
 
 # ----------------------------------------------------------------------------------- conteúdo
-ETAPA_ATUAL = "Etapa 1 (comprar a placa). Etapas 3 a 11 prontas e testadas no simulador; falta rodá-las na placa"
-PROXIMO = ("Fazer o pedido da placa ESP32-8048S043C (ver seção 4) e, enquanto ela não chega, rodar as etapas 4 a 11 no simulador "
+ETAPA_ATUAL = "Peças compradas, aguardando a entrega. Etapas 3 a 11 (com o turno) prontas e testadas no simulador; falta rodá-las na placa"
+PROXIMO = ("Enquanto a placa não chega, testar no simulador as etapas 4 a 11 (inclusive o turno) "
            "(um README por pasta em etapas/). Quando a placa chegar: Etapa 2 (instalar a IDE) e carregar as etapas 3 a 11 nela, na ordem.")
 
 ETAPAS = [
     ("0", "Definir o que o visor deve fazer (a partir do vídeo de referência)", "Concluída"),
     ("0", "Escolher o hardware", "Concluída"),
     ("S", "Simulador no PC: roda os mesmos programas numa janela 800×480 (o mouse faz o papel do dedo)", "Concluída"),
-    ("1", "Comprar a placa ESP32-8048S043C e um cabo USB-C de dados", "Em andamento"),
+    ("1", "Comprar a placa ESP32-8048S043C e um cabo USB-C de dados", "Comprada, aguardando entrega"),
     ("2", "Instalar a Arduino IDE 2, o pacote de placas ESP32 e a biblioteca LovyanGFX", "Pendente"),
     ("3", "Primeiro programa: acender a tela e escrever um texto (etapas/etapa03_ola)", "Pronto no simulador"),
     ("4", "Testar o touch: desenhar um ponto onde o dedo encosta (etapas/etapa04_touch)", "Pronto no simulador"),
@@ -133,6 +133,13 @@ HISTORICO = [
     ("24/11/2026", "Visor (etapas 7 a 11) trocado para o visual 8-bit: novo motor de desenho gfx8 (fontes em pixel art, ícones, "
                    "molduras com cantos em escadinha, fundo de estrelas) ligado ao ui.cpp. Regras e toques iguais; todas as telas "
                    "testadas com toques automáticos (1 a 4 jogadores, LOCK, FIRST, RESET, veneno, energia, comandante e histórico)."),
+    ("24/11/2026", "Peças compradas, aguardando a entrega. Pesquisa de cabo USB-C (precisa ser de dados) e cartão microSD "
+                   "(opcional: 8 a 32 GB, FAT32). Estudo de custo para produção em escala (comprar direto do fabricante "
+                   "ou projetar placa própria)."),
+    ("25/11/2026", "Ideia do Enzo: mostrar de quem é o turno. O painel da vez fica mais claro, com borda mais grossa e "
+                   "\"YOUR TURN\"; botões PASS TURN dos dois lados da faixa do meio; FIRST já começa a rodada 1; segurar o meio "
+                   "de um painel corrige a vez; eliminados são pulados; rodada contada; tudo no histórico e no UNDO; opção "
+                   "TURNS ON/OFF no menu. Painéis passaram de 194 para 180 px de altura; briefing e gabaritos da arte atualizados."),
 ]
 
 # ----------------------------------------------------------------------------------- montagem

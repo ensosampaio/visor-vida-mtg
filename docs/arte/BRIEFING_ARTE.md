@@ -50,7 +50,11 @@ As medidas estão amarradas às áreas de toque do programa. Se quiser outro lay
 ![Gabarito de um painel de jogador](gabarito_painel_jogador.png)
 
 No painel de cada jogador, o **terço esquerdo inteiro é o botão −** e o **terço direito é o botão +**.
-O centro fica livre para o número da vida.
+O centro fica livre para o número da vida (e segurar o centro marca "é a vez deste jogador").
+
+**Turno:** o painel de quem está jogando aparece **mais claro e com a borda mais grossa**, com "YOUR TURN" no alto.
+Por isso cada painel precisa de uma versão "no turno". Na faixa do meio entram dois botões **PASS TURN**
+(o da direita é girado 180° para quem senta do outro lado) e o número da rodada.
 
 ## 4. Lista de peças
 
@@ -58,11 +62,12 @@ O centro fica livre para o número da vida.
 |---|---|---|
 | Fundo do menu inicial | 800 × 480 | — |
 | Fundo da tela de configuração | 800 × 480 | — |
-| Botão grande (COMMANDER, STANDARD) | 500 × 110 | normal, pressionado |
-| Botão médio (BACK, RESUME, LIGHT, YES, NO...) | 200 × 52 | normal, selecionado, desativado |
+| Botão grande do menu (COMMANDER, STANDARD) | 500 × 124 | normal, pressionado |
+| Botão médio (BACK, RESUME, TURNS, LIGHT, YES, NO...) | 200 × 52 | normal, selecionado, desativado |
+| Botão PASS TURN | 200 × 56 | normal, desativado (partida acabou) |
 | Botões do topo (LOG, LOCK, UNDO, FIRST, RESET, MENU) | 82 × 34 cada | normal, ativo (LOCK ligado), desativado (UNDO sem nada para desfazer) |
-| Painel do jogador (4 jogadores) | 390 × 194 | normal e eliminado, para P1 a P4 (ou um painel neutro + etiqueta colorida) |
-| Painel largo (2 ou 3 jogadores) | 788 × 194 | normal, eliminado |
+| Painel do jogador (4 jogadores) | 390 × 180 | normal, **no turno** e eliminado, para P1 a P4 (ou um painel neutro + etiqueta colorida) |
+| Painel largo (2 ou 3 jogadores) | 788 × 180 | normal, no turno, eliminado |
 | Painel único (1 jogador) | 788 × 384 | normal, eliminado |
 | Etiqueta do jogador (P1–P4) | 54 × 26 | uma cor por jogador |
 | Ícones: comandante, energia, veneno | 40 × 24 (botão do meio) e 18 × 18 (dentro do painel) | — |
