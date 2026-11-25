@@ -3,6 +3,9 @@
 Aqui as etapas 4 a 6 viram o programa inteiro do contador, organizado em arquivos.
 Tudo foi testado no simulador e compila para a placa; **falta rodar na placa de verdade**.
 
+O visual é o **tema 8-bit** (paleta do videogame NES): fontes, ícones, molduras e o fundo de estrelas
+são desenhados só com retângulos pelo motor `gfx8`, sem nenhuma imagem. Os prints abaixo são do próprio código.
+
 | Tela | |
 |---|---|
 | Menu e configuração (etapa 7) | ![](07_menu.png) ![](07_configuracao.png) |
@@ -18,10 +21,26 @@ Tudo foi testado no simulador e compila para a placa; **falta rodar na placa de 
 | `etapa07a11_visor.ino` | Liga a tela, cria o sprite e repassa cada toque para a interface. Bem curto. |
 | `game.h` / `game.cpp` | **As regras** (classe `mtg::Game`): vida, veneno, energia, dano de comandante, eliminação, UNDO e histórico. Não sabe nada de tela. |
 | `ui.h` / `ui.cpp` | **A interface** (classe `App`): desenha cada tela e decide o que cada toque faz. |
+| `gfx8.h` / `gfx8.cpp` | **O motor de desenho 8-bit**: paleta, cantos em escadinha, texto, números grandes, ícones, botões e painéis. |
+| `fonte8.h` / `fonte_grande.h` | As duas fontes em pixel art: letras 5x7 em negrito e algarismos 8x10 para a vida. |
+| `plataforma.h` | Deixa o motor compilar na placa e no PC. |
 | `placa.h` | Escolhe entre a placa de verdade e o simulador do PC. |
 
 Separar regras e interface é o mesmo princípio de separar domínio e controller num back-end: dá para mudar a
-tela sem mexer nas regras, e testar as regras sem tela.
+tela sem mexer nas regras, e testar as regras sem tela. Foi o que aconteceu na troca para o visual 8-bit:
+`game.h`/`game.cpp` não mudaram uma linha.
+
+## Como o desenho 8-bit funciona
+
+- **Pixels 8-bit:** as telas são montadas numa grade de 400x240; cada "pixel 8-bit" vira um quadradinho de 2x2
+  na tela de 800x480. Por isso as posições em `ui.cpp` são a metade das medidas da tela (o painel de 390x194 vira 195x97).
+  Os toques continuam em pixels reais: `addHitL()` faz a conversão.
+- **Uma função só fala com a tela:** o motor só sabe pintar retângulos (`portaPreencher`, em `ui.cpp`), que pinta no
+  sprite da LovyanGFX. Trocar de biblioteca gráfica é mexer nessa função.
+- **Painéis de cabeça para baixo:** `gOrigem(x, y, w, h, true)` faz o motor desenhar o painel girado 180°. O painel é
+  sempre desenhado como se fosse o jogador "de baixo".
+- **Cores:** a paleta (constantes `C_...` em `gfx8.h`) usa só cores que existiam no NES. Cada jogador tem um `Estilo`
+  (borda, fundo e a cor dos pontinhos de textura) em `EST_JOGADOR`.
 
 ## Onde está cada etapa no código
 
@@ -47,7 +66,7 @@ tela sem mexer nas regras, e testar as regras sem tela.
 - 21 de um mesmo comandante elimina (`CMDR_LETHAL`). O painel do eliminado fica escuro, com faixa vermelha e o motivo.
 
 ### Etapa 11 — Histórico
-- `App::renderLog()`: 10 linhas por página, a mais recente primeiro, com NEWER/OLDER.
+- `App::renderLog()`: 10 linhas por página, a mais recente primeiro, com NEWER/OLDER. Cada tipo de evento tem uma cor.
 - `Game::change()` + `Game::flush()`: toques seguidos no mesmo contador, em até 3 s, viram **uma** linha (ex.: "P2 LIFE -3 = 37").
 - O histórico guarda até 200 linhas num buffer circular (`log_` em `game.h`).
 

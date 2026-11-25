@@ -107,6 +107,9 @@ DECISOES = [
      "Histórico de cada mudança e backup fora do computador. O Claude não grava mais direto na pasta local, para o git pull não dar conflito."),
     ("24/11/2026", "Trabalhar em mini tarefas, uma etapa por vez.",
      "Pedido do Enzo, para aprender aos poucos e acompanhar o projeto."),
+    ("24/11/2026", "Visual 8-bit (paleta do NES) desenhado em código, no lugar do visual provisório.",
+     "Escolhido entre as versões 16-bit e 8-bit. Desenhado só com retângulos (motor gfx8): não ocupa memória com imagens "
+     "e as regras do jogo não mudaram."),
 ]
 
 HISTORICO = [
@@ -127,6 +130,9 @@ HISTORICO = [
                    "push direto no repositório, e a pasta local é atualizada com git pull."),
     ("24/11/2026", "Briefing para um artista fazer a arte personalizada das telas (docs/arte): medidas e limitações da tela, "
                    "lista de peças, formato de entrega, direitos e checklist, com gabaritos em tamanho real e versão em PDF."),
+    ("24/11/2026", "Visor (etapas 7 a 11) trocado para o visual 8-bit: novo motor de desenho gfx8 (fontes em pixel art, ícones, "
+                   "molduras com cantos em escadinha, fundo de estrelas) ligado ao ui.cpp. Regras e toques iguais; todas as telas "
+                   "testadas com toques automáticos (1 a 4 jogadores, LOCK, FIRST, RESET, veneno, energia, comandante e histórico)."),
 ]
 
 # ----------------------------------------------------------------------------------- montagem
@@ -281,15 +287,15 @@ s += [Table([[Image(f"{IMG}/etapa03_simulador.png", simw, simw * 480 / 800),
 rows = [["Pasta", "Conteúdo"],
         ["etapas/etapa03_ola/", "Etapa 3: programa comentado, placa.h, guia (README.md) e print do simulador."],
         ["etapas/etapa04_touch/ a etapa06_quatro_paineis/", "Etapas 4 a 6: um programa pequeno e comentado por etapa, cada um com guia e print."],
-        ["etapas/etapa07a11_visor/", "Visor completo: .ino, game.h/.cpp (regras), ui.h/.cpp (telas), guia que liga cada etapa (7 a 11) ao código, e prints de todas as telas."],
+        ["etapas/etapa07a11_visor/", "Visor completo: .ino, game.h/.cpp (regras), ui.h/.cpp (telas), gfx8.h/.cpp e fontes (motor de desenho 8-bit), guia que liga cada etapa (7 a 11) ao código, e prints de todas as telas."],
         ["simulador/", "CMakeLists.txt, main.cpp e arduino_shim.h (imita Serial, delay e millis no PC) e o README.md."],
         ["rascunho/LifeCounter/", "Primeiro rascunho do firmware (substituído por etapas/etapa07a11_visor)."],
         ["docs/fonte/", "Script e imagens que geram este diário."],
         ["docs/arte/", "Briefing para o artista (BRIEFING_ARTE.md e Briefing_Arte.pdf) e gabaritos das telas em tamanho real."]]
 s += [Spacer(1, 3 * mm), table(rows, [48 * mm, W - 48 * mm])]
 s += [Spacer(1, 3 * mm), Table([[Image(f"{IMG}/visor_jogo.png", simw, simw * 480 / 800),
-              P("Visor completo (etapas 7 a 11) no simulador: P2 levou -3 e P4 -1. "
-                "Os ícones do meio abrem dano de comandante, energia e veneno.", small)]],
+              P("Visor completo (etapas 7 a 11) com o visual 8-bit: P2 eliminado por 21 de dano de comandante, "
+                "P3 com energia e veneno, P4 acabou de perder 1. Os ícones do meio abrem dano de comandante, energia e veneno.", small)]],
             colWidths=[simw + 6 * mm, W - simw - 6 * mm],
             style=TableStyle([("VALIGN", (0, 0), (-1, -1), "MIDDLE"), ("LEFTPADDING", (0, 0), (-1, -1), 0)]))]
 

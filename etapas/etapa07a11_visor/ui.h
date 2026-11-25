@@ -1,6 +1,8 @@
 // ui.h — telas, desenho e toques.
 // Tudo é desenhado numa "tela invisível" (sprite) de 800x480 e depois
 // copiado de uma vez para o display, o que evita a tela piscar.
+// O visual é o tema 8-bit (paleta do NES), desenhado só com retângulos pelo motor gfx8:
+// as posições das telas estão em "pixels 8-bit" (400x240; cada um vira 2x2 na tela).
 #pragma once
 #include <LovyanGFX.hpp>
 #include "game.h"
@@ -42,26 +44,26 @@ private:
   void renderMenu();
   void renderSetup();
   void renderPlay(uint32_t now);
-  void renderPanel(int i, Rect r, bool rotated, uint32_t now);
+  void renderPanel(int i, Rect r, bool rotated, uint32_t now);   // r em pixels 8-bit
   void renderCounters();
   void renderCmdr();
   void renderLog();
   void renderConfirm();
   void topBar();
-  void iconButton(int x, int y, int w, int h, int icon, Action act);
-  void ensurePanelSprite(int w, int h);
+  void iconButton(int x, int y, uint8_t icon, Action act);
 
   // toques
-  void addHit(Rect r, Action act, int a = 0, int b = 0, bool repeat = false);
+  void addHit(Rect r, Action act, int a = 0, int b = 0, bool repeat = false);       // r em pixels da tela
+  void addHitL(int x, int y, int w, int h, Action act, int a = 0, int b = 0,
+               bool repeat = false);                                                // em pixels 8-bit
   void addPanelHit(Rect panel, bool rotated, Rect local, Action act, int a, int b, bool repeat);
   const Hit* hitAt(int x, int y) const;
   void perform(const Hit& h, int step, uint32_t now);
 
-  void layoutPanels(Rect* rects, bool* rotated, int n) const;
+  void layoutPanels(Rect* rects, bool* rotated, int n) const;    // em pixels 8-bit
   bool animating(uint32_t now) const;
 
   LGFX_Sprite& canvas_;
-  LGFX_Sprite panel_;
   PlatformHooks hooks_;
   mtg::Game game_;
 
